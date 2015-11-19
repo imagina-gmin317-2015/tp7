@@ -80,7 +80,8 @@ private:
     QCursor* cursor2;
     bool cursorCaptured = false;
 
-    QSet<QVector3D> verticesArray;
+    QSet<QVector3D> verticesSet;
+    QVector<QVector3D> verticesArray;
     QVector<QVector3D> normalsArray;
     QVector<QVector3D> colorsArray;
     QVector<int> indexesArray;
