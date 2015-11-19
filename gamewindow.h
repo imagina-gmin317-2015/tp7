@@ -19,6 +19,7 @@
 #include "resourcemanager.h"
 #include "plyentity.h"
 #include "forest.h"
+#include "delaunay.h"
 
 class GameWindow : public OpenGLWindow
 {
@@ -61,6 +62,7 @@ signals:
 
 private:
     GLfloat *initVertices(GLint countX, GLint county);
+    GLfloat *initVertices(GLint countX, GLint county, float threshold);
     GLfloat getRandomZ(float x, float y);
     GLuint loadShader(GLenum type, const char *source);
 
@@ -78,9 +80,10 @@ private:
     QCursor* cursor2;
     bool cursorCaptured = false;
 
-    QVector<QVector3D> verticesArray;
+    QSet<QVector3D> verticesArray;
     QVector<QVector3D> normalsArray;
     QVector<QVector3D> colorsArray;
+    QVector<int> indexesArray;
 
     QOpenGLBuffer m_vertexbuffer;
     QOpenGLBuffer m_normalbuffer;

@@ -12,6 +12,7 @@
 #include <sys/time.h>
 #include <iostream>
 #include <functional>
+#include <algorithm>
 
 #include <QtCore>
 #include <QtGui>
@@ -46,7 +47,7 @@ void GameWindow::initialize()
     imagePath = ":/heightmap-1.png";
     this->m_image = QImage(imagePath);
 
-    this->vertices = initVertices(this->m_image.width(), this->m_image.height());
+    this->vertices = initVertices(this->m_image.width(), this->m_image.height(), 10);
 
     //    entity = PlyEntity::load(":/gull.ply");
     //    entity->setPosition(0, 0, qGray(this->m_image.pixel((this->m_image.width() * (0 + 0.5f)), (this->m_image.height() * (0 + 0.5f)))) * 0.0008f);
@@ -85,7 +86,8 @@ void GameWindow::initialize()
 
     m_vertexbuffer.create();
     m_vertexbuffer.bind();
-    m_vertexbuffer.allocate(verticesArray.constData(), verticesArray.size() * sizeof(QVector3D));
+
+    m_vertexbuffer.allocate(verticesArray.toList().toVector().constData(), verticesArray.size() * sizeof(QVector3D));
     m_vertexbuffer.release();
 
     m_normalbuffer.create();
@@ -319,7 +321,8 @@ void GameWindow::drawTriangles()
     m_colorbuffer.bind();
     glColorPointer(3, GL_FLOAT, 0, NULL);
     m_colorbuffer.release();
-    glDrawArrays(GL_TRIANGLES, 0, verticesArray.size());
+//    glDrawArrays(GL_TRIANGLES, 0, verticesArray.size());
+    glDrawElements(GL_TRIANGLES, indexesArray.size(), GL_UNSIGNED_INT, indexesArray.constData());
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -374,40 +377,40 @@ void GameWindow::load()
     ResourceManager::assign(spring->attributes(), ResourceManager::parse(list.at(5)));
 }
 
-//GLfloat *GameWindow::initVertices(GLint countX, GLint countY)
-//{
-//    GLfloat stepX = 1.0 / (countX);
-//    GLfloat stepY = 1.0 / (countY);
+GLfloat *GameWindow::initVertices(GLint countX, GLint countY)
+{
+    GLfloat stepX = 1.0 / (countX);
+    GLfloat stepY = 1.0 / (countY);
 
-//    float posX;
-//    float posY;
+    float posX;
+    float posY;
 
-//    auto color = [](QVector3D v) {
-//        if(v.z() < 0.08) {
-//            return QVector3D(v.z(), 0.4, 0);
-//        } else if(v.z() > 0.08 && v.z() < 0.15) {
-//            return QVector3D(0.54, 0.27 + v.z(), 0.07);
-//        } else {
-//            return QVector3D(0.9, 0.8, 0.9);
-//        }
-//    };
+    auto color = [](QVector3D v) {
+        if(v.z() < 0.08) {
+            return QVector3D(v.z(), 0.4, 0);
+        } else if(v.z() > 0.08 && v.z() < 0.15) {
+            return QVector3D(0.54, 0.27 + v.z(), 0.07);
+        } else {
+            return QVector3D(0.9, 0.8, 0.9);
+        }
+    };
 
-//#pragma omp for schedule(dynamic)
-//    for (int i = 0 ; i < countX - 1; ++i) {
-//        for (int j = 0; j < countY - 1; ++j) {
+#pragma omp for schedule(dynamic)
+    for (int i = 0 ; i < countX - 1; ++i) {
+        for (int j = 0; j < countY - 1; ++j) {
 //            posX = i * stepX - 0.5; posY = (j + 1) * stepY - 0.5;
 //            QVector3D v2(posX,  posY, getRandomZ(posX, posY));
-//            verticesArray.push_back(v2);
+//            verticesArray.insert(v2);
 //            colorsArray.push_back(color(v2));
 
 //            posX = i * stepX - 0.5; posY = j * stepY - 0.5;
 //            QVector3D v1(posX,  posY, getRandomZ(posX, posY));
-//            verticesArray.push_back(v1);
+//            verticesArray.insert(v1);
 //            colorsArray.push_back(color(v1));
 
 //            posX = (i + 1) * stepX - 0.5; posY = j * stepY - 0.5;
 //            QVector3D v3(posX,  posY, getRandomZ(posX, posY));
-//            verticesArray.push_back(v3);
+//            verticesArray.insert(v3);
 //            colorsArray.push_back(color(v3));
 
 //            QVector3D n = QVector3D::normal(v3 - v1, v2 - v1);
@@ -434,30 +437,99 @@ void GameWindow::load()
 //            normalsArray.push_back(n1);
 //            normalsArray.push_back(n1);
 //            normalsArray.push_back(n1);
-//        }
-//    }
-//    return 0;
-//}
+        }
+    }
+    return 0;
+}
 
-GLfloat *GameWindow::initVertices(GLint countX, GLint countY)
+GLfloat *GameWindow::initVertices(GLint countX, GLint countY, float threshold)
 {
-//    GLfloat stepX = 1.0 / (countX);
-//    GLfloat stepY = 1.0 / (countY);
+    step(0, 0, countX, countY, threshold);
+    del_point2d_t	points_[verticesArray.size()];
+    QList<QVector3D> l = verticesArray.toList();
+    for (int i = 0; i < verticesArray.size(); ++i) {
+        del_point2d_t p;
+        p.x = l[i].x(); p.y = l[i].y();
+        points_[i] = p;
+    }
+    delaunay2d_t* res = delaunay2d_from(points_, verticesArray.size());
+    tri_delaunay2d_t*	tdel	= tri_delaunay2d_from(res);
 
-//    float posX;
-//    float posY;
+    qDebug() << "??? = " << tdel->num_triangles;
 
-//    auto color = [](QVector3D v) {
-//        if(v.z() < 0.08) {
-//            return QVector3D(v.z(), 0.4, 0);
-//        } else if(v.z() > 0.08 && v.z() < 0.15) {
-//            return QVector3D(0.54, 0.27 + v.z(), 0.07);
-//        } else {
-//            return QVector3D(0.9, 0.8, 0.9);
-//        }
+    for (int i = 0; i < tdel->num_triangles; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            indexesArray.push_back(tdel->tris[i * 3 + j]);
+        }
+    }
+
+    delaunay2d_release(res);
+    qDebug() << "triangulation ok";
+
+//    std::sort(verticesArray.begin(), verticesArray.end(), [=] (QVector3D v1, QVector3D v2) {
+//         if(v1.x() == v1.x()) return v1.y() < v2.y();
+//         return v1.x() < v2.x();
+//    });
+
+//    auto determinant = [] (QVector3D v1, QVector3D v2) {
+//        return v1.x() * v2.y() - v2.x() * v1.y();
 //    };
 
-    step(0, 0, countX, countY, 5);
+//    //x = index pt 1
+//    //y = index pt 2...
+//    QVector<QVector3D> triangulation;
+//    QVector<int> ec;
+//    QVector3D first(0, 1, 2);
+//    triangulation.push_back(first);
+
+//    ec.push_back(2);
+//    ec.push_back(0);
+//    ec.push_back(1);
+//    ec.push_back(2);
+
+//    for (int i = 2; i < verticesArray.size() - 1; ++i) {
+//        int j = 0;
+//        forever {
+//            QVector3D v1(verticesArray[i + 1] - verticesArray[ec[j]]);
+//            QVector3D v2(verticesArray[i + 1] - verticesArray[ec[j + 1]]);
+//            if(determinant(v1, v2) < 0) {
+//                triangulation.push_back(QVector3D (ec[j], ec[j+1], i+1));
+//                j++;
+//            } else {
+//                break;
+//            }
+//        }
+//        int kdroite = j;
+//        j = ec.size() - 1;
+
+//        forever {
+//            QVector3D v1(verticesArray[i + 1] - verticesArray[ec[j]]);
+//            QVector3D v2(verticesArray[i + 1] - verticesArray[ec[j - 1]]);
+//            if(determinant(v1, v2) > 0) {
+//                triangulation.push_back(QVector3D (ec[j], ec[j-1], i+1));
+//                j--;
+//            } else {
+//                break;
+//            }
+//        }
+//        int kgauche = j;
+//        j = ec.size() - 1;
+//        QVector<int> copy;
+//        copy.push_back(i+1);
+//        for (int k = kdroite; k < kgauche + 1; ++k) {
+//            copy.push_back(ec[k]);
+//        }
+//        copy.push_back(i+1);
+//        ec = copy;
+
+//    }
+
+//    for (int i = 0; i < triangulation.size(); ++i) {
+//        qDebug() << triangulation[i].x();
+//        indexesArray.push_back(triangulation[i].x());
+//        indexesArray.push_back(triangulation[i].y());
+//        indexesArray.push_back(triangulation[i].z());
+//    }
 
     return 0;
 }
@@ -466,6 +538,9 @@ GLfloat *GameWindow::initVertices(GLint countX, GLint countY)
 void GameWindow::step(int startx, int starty, int width, int height, float threshold)
 {
     float posX, posY;
+
+    if(startx + width >= m_image.width()) width--;
+    if(starty + height >= m_image.height()) height--;
 
     auto areaAvg = [=]() {
         double sum = 0;
@@ -500,26 +575,25 @@ void GameWindow::step(int startx, int starty, int width, int height, float thres
     };
 
     double v = areaStdDev(areaAvg());
-    qDebug() << "v = " << v;
 
     if(v < threshold || width == 1) {
-        qDebug() << width;
-        posX = startx / (float) m_image.width() - 0.5;
-        posY = (starty + height) / (float) m_image.height() - 0.5;
-        QVector3D v2(posX,  posY, getRandomZ(posX, posY));
-        verticesArray.push_back(v2);
-        colorsArray.push_back(color(v2));
-
         posX = startx / (float) m_image.width() - 0.5;
         posY = starty / (float) m_image.height() - 0.5;
         QVector3D v1(posX,  posY, getRandomZ(posX, posY));
-        verticesArray.push_back(v1);
+        verticesArray.insert(v1);
         colorsArray.push_back(color(v1));
+
+        posX = startx / (float) m_image.width() - 0.5;
+        posY = (starty + height) / (float) m_image.height() - 0.5;
+        QVector3D v2(posX,  posY, getRandomZ(posX, posY));
+        verticesArray.insert(v2);
+        colorsArray.push_back(color(v2));
+
 
         posX = (startx + width) / (float) m_image.width() - 0.5;
         posY = starty / (float) m_image.height() - 0.5;
         QVector3D v3(posX,  posY, getRandomZ(posX, posY));
-        verticesArray.push_back(v3);
+        verticesArray.insert(v3);
         colorsArray.push_back(color(v3));
 
         QVector3D n = QVector3D::normal(v3 - v1, v2 - v1);
@@ -527,28 +601,28 @@ void GameWindow::step(int startx, int starty, int width, int height, float thres
         normalsArray.push_back(n);
         normalsArray.push_back(n);
 
-        posX = startx / (float) m_image.width() - 0.5;
-        posY = (starty + height) / (float) m_image.height() - 0.5;
-        QVector3D v4(posX, posY, getRandomZ(posX, posY));
-        verticesArray.push_back(v4);
-        colorsArray.push_back(color(v4));
+//        posX = startx / (float) m_image.width() - 0.5;
+//        posY = (starty + height) / (float) m_image.height() - 0.5;
+//        QVector3D v4(posX, posY, getRandomZ(posX, posY));
+//        verticesArray.push_back(v4);
+//        colorsArray.push_back(color(v4));
 
-        posX = (startx + width) / (float) m_image.width() - 0.5;
-        posY = starty / (float) m_image.height() - 0.5;
-        QVector3D v6(posX, posY, getRandomZ(posX, posY));
-        verticesArray.push_back(v6);
-        colorsArray.push_back(color(v6));
+//        posX = (startx + width) / (float) m_image.width() - 0.5;
+//        posY = starty / (float) m_image.height() - 0.5;
+//        QVector3D v6(posX, posY, getRandomZ(posX, posY));
+//        verticesArray.push_back(v6);
+//        colorsArray.push_back(color(v6));
 
-        posX = (startx + width) / (float) m_image.width() - 0.5;
-        posY = (starty + height) / (float) m_image.height() - 0.5;
-        QVector3D v5(posX, posY, getRandomZ(posX, posY));
-        verticesArray.push_back(v5);
-        colorsArray.push_back(color(v5));
+//        posX = (startx + width) / (float) m_image.width() - 0.5;
+//        posY = (starty + height) / (float) m_image.height() - 0.5;
+//        QVector3D v5(posX, posY, getRandomZ(posX, posY));
+//        verticesArray.push_back(v5);
+//        colorsArray.push_back(color(v5));
 
-        QVector3D n1 = QVector3D::normal(v6 - v4, v5 - v4);
-        normalsArray.push_back(n1);
-        normalsArray.push_back(n1);
-        normalsArray.push_back(n1);
+//        QVector3D n1 = QVector3D::normal(v6 - v4, v5 - v4);
+//        normalsArray.push_back(n1);
+//        normalsArray.push_back(n1);
+//        normalsArray.push_back(n1);
     } else {
         step(startx, starty, width * 0.5, height * 0.5, threshold);
         step(startx + width * 0.5, starty, width * 0.5, height * 0.5, threshold);
@@ -585,3 +659,21 @@ float GameWindow::getRandomZ(float i, float j)
     return qGray(this->m_image.pixel((this->m_image.width() * (i + 0.5f)), (this->m_image.height() * (j + 0.5f)))) * 0.0008f;
 }
 
+#define ROTL10(x) (((x) << 10) | (((x) >> 22) & 0x000000ff))
+#define ROTL20(x) (((x) << 20) | (((x) >> 12) & 0x0000ffff))
+
+uint qHash(double data)
+{
+union U {
+    quint64 n;
+    double f;
+};
+U u;
+u.f = data;
+return u.f;
+}
+
+inline uint qHash(const QVector3D &v, uint seed)
+{
+return qHash(v.x()) ^ ROTL10(qHash(v.y())) ^ ROTL20(qHash(v.z()));
+}
