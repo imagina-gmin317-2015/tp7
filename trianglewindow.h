@@ -4,6 +4,7 @@
 #include "openglwindow.h"
 #include "filemanager.h"
 #include "plyloader.h"
+#include "quadtree.h"
 #include <QString>
 #include <QVector>
 #include <QVector3D>
@@ -96,6 +97,8 @@ private:
     QVector<QVector3D> points;
     QVector<QVector3D> normals;
     QOpenGLShaderProgram* shader;
+
+    Quadtree* quad;
 };
 
 

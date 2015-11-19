@@ -14,6 +14,8 @@ PlyLoader::PlyLoader(QString fileName)
 
 void PlyLoader::load()
 {
+    float xMin,yMin,xMax,yMax; // pour créer la bounding box
+    float x,y;
     this->file->open(QIODevice::ReadOnly);
     QTextStream flux(this->file);
     QString fichierString = flux.readAll();
@@ -50,13 +52,24 @@ void PlyLoader::load()
 
     QStringList li;
     // Lectures des vertices
+    li = list.at(0).split(" ");
+    xMin = li.at(0).toFloat();
+    xMax =xMin;
+    yMin = li.at(0).toFloat();
+    yMax = yMin;
     for (int i = cpt+1; i < cpt + nbVertices +1 ; ++i) {
         li = list.at(i).split(" ");
         point p,q;
         //point
-        p.x = li.at(0).toFloat();
-        p.y = li.at(1).toFloat();
-        p.z = li.at(2).toFloat();
+        p.x = this->x+li.at(0).toFloat();
+        p.y = this->y+li.at(1).toFloat();
+        p.z = this->z+li.at(2).toFloat();
+        x = p.x;
+        y = p.y;
+        if(x >= xMax) xMax = x;
+        if(x <= xMin) xMin = x;
+        if(y >= yMax) yMax = y;
+        if(y <= yMin) yMin = y;
         vertices.push_back(p);
         //nx,ny,nz ?
         q.x = li.at(3).toFloat();
@@ -76,6 +89,10 @@ void PlyLoader::load()
         }
         faces.push_back(face);
     }
+    this->xMin = xMin;
+    this->yMin = yMax;
+    this->xMax = xMax;
+    this->yMax = yMin;
 
 
 }
@@ -106,5 +123,31 @@ void PlyLoader::draw()
            glEnd();
        }
 
-     //  glPopMatrix();
+       //  glPopMatrix();
+}
+
+QVector<float> PlyLoader::getBounding()
+{
+    QVector<float> bound;
+    bound.push_back(this->xMin);
+    bound.push_back(this->yMin);
+    bound.push_back(this->xMax);
+    bound.push_back(this->yMax);
+    return bound;
+
+}
+
+QVector<float> PlyLoader::getCoord()
+{
+    QVector<float> coord;
+    coord.push_back(this->x);
+    coord.push_back(this->y);
+    coord.push_back(this->z);
+    return coord;
+
+}
+
+QString PlyLoader::getName()
+{
+    return this->file->fileName();
 }

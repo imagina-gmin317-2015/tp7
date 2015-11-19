@@ -12,11 +12,13 @@ SOURCES += $$PWD/openglwindow.cpp \
     main.cpp \
     trianglewindow.cpp \
     filemanager.cpp \
-    plyloader.cpp
+    plyloader.cpp \
+    quadtree.cpp
 HEADERS += $$PWD/openglwindow.h \
     trianglewindow.h \
     filemanager.h \
-    plyloader.h
+    plyloader.h \
+    quadtree.h
 
 target.path = .
 

@@ -38,8 +38,8 @@ int main(int argc, char **argv)
     /*PlyLoader *ply = new PlyLoader("E:/Travail/github/TP4/summertree.ply");
     ply->load();*/
 
-    TriangleWindow* window[4];
-    for(int i = 0; i < 4; i++)
+    TriangleWindow* window[1];
+    for(int i = 0; i < 1; i++)
     {
         if (i == 0)
             window[i] = new TriangleWindow();

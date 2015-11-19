@@ -21,9 +21,13 @@ public:
     PlyLoader(QString fileName);
     void load();
     void draw();
+    QVector<float> getBounding();
+    QVector<float> getCoord();
+    QString getName();
 
 private:
     float x, y, z, ori, size;
+    float xMin,xMax, yMin,yMax; // bounding box;
     QFile *file;
     QVector<point> vertices;
     QVector<QVector<int>> faces;

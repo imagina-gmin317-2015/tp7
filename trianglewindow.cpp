@@ -167,7 +167,7 @@ void TriangleWindow::initialize()
     for(int i = 0; i < numParticules; i++)
     {
         int angle =minP + (rand() % (int)(maxP - minP + 1));
-        int dist = (rand() % (int)(100 ));
+        int dist = (rand() % (int)(100));
         int alt = (rand() % (int)(100));
         float x = sin(
                     ((3.14159 * 2) *
@@ -188,6 +188,7 @@ void TriangleWindow::initialize()
     PlyLoader *l = new PlyLoader(":/summertree.ply");
     l->load();
     addMods(l);
+    this->quad = new Quadtree(-100.0f,100.0f,100.0f, -100.0f,this->getMods(),0);
 
 }
 
@@ -277,6 +278,7 @@ void TriangleWindow::loadMap(QString localPath)
 
 void TriangleWindow::render()
 {
+   // this->quad->getPly();
     nbTick += maj;
 
     if(nbTick >= 1000)
