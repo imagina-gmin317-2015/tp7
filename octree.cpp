@@ -55,15 +55,17 @@ void Node::addEntity(PlyEntity *entity)
         if(entity->getZ() > z + depth * 0.5)
             newZ = z + depth * 0.5;
 
-        Node *n = new Node(newX, newY, newZ, width * 0.5, height * 0.5, depth * 0.5);
-        foreach (Node *other, nodes) {
-            if(n->equal(other)) {
-                other->addEntity(entity);
-//                nodes.push_back(other);
+        int i = 0;
+        Node n(newX, newY, newZ, width * 0.5, height * 0.5, depth * 0.5);
+        foreach (Node other, nodes) {
+            if(n.equal(other)) {
+                nodes[i].addEntity(entity);
+//                other.addEntity(entity);
                 return;
             }
+            i++;
         }
-        n->addEntity(entity);
+        n.addEntity(entity);
         nodes.push_back(n);
 
     } else {
@@ -97,19 +99,27 @@ void Node::draw()
     glVertex3f(x + width, y + height, z + depth);
     glEnd();
 
-    foreach (Node *child, nodes) {
-        child->draw();
+    foreach (Node child, nodes) {
+        child.draw();
     }
 }
 
 void Node::clear()
 {
-    nodes.clear();
-    entities.clear();
+    foreach (Node node, nodes) {
+        if(node.nodes.size() == 0) {
+            node.entities.clear();
+        } else {
+            entities.clear();
+            node.clear();
+            nodes.clear();
+        }
+    }
+
 }
 
-bool Node::equal(Node *n)
+bool Node::equal(Node n)
 {
-    return(n->x == x && n->y == y && n->z == z &&
-            n->width == width && n->height == height && n->depth == depth);
+    return(n.x == x && n.y == y && n.z == z &&
+            n.width == width && n.height == height && n.depth == depth);
 }

@@ -16,7 +16,7 @@ public:
     void addEntity(PlyEntity *entity);
     void draw();
     void clear();
-    bool equal(Node *n);
+    bool equal(Node n);
 
 private:
     float width, height, depth, x, y, z;
@@ -27,7 +27,7 @@ private:
     //4-7 haut
     //paire gauche
     //impaire droite
-    QVector<Node *> nodes;
+    QVector<Node> nodes;
 };
 
 class Octree
