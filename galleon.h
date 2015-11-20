@@ -12,6 +12,7 @@ public:
     void update(float delta);
     void draw();
     void setWaterHeight(float waterHeight);
+    PlyEntity *getEntity();
 
 private:
     PlyEntity *entity;

@@ -1,6 +1,6 @@
 #include "birds.h"
 
-Birds::Birds(   int birdCount)
+Birds::Birds(int birdCount)
 {
     PlyEntity *target = PlyEntity::load(":/gull.ply");
 
@@ -44,4 +44,9 @@ void Birds::draw(float delta)
     for (int i = 0; i < entities.size(); ++i) {
         entities[i]->draw(delta);
     }
+}
+
+QVector<PlyEntity*> Birds::getEntities()
+{
+    return entities;
 }

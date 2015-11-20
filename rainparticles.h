@@ -16,6 +16,7 @@
 #include "utils.h"
 #include "resourcemanager.h"
 #include "galleon.h"
+#include "octree.h"
 
 class RainDrop {
     friend class Pool<RainDrop *>;
@@ -49,6 +50,7 @@ private:
     bool isActive;
     float lightningX, lightningY;
     Galleon *galleon;
+    Octree *octree;
 
     QOpenGLShaderProgram *shader;
     QVector<QVector2D> waterArray;

@@ -16,7 +16,8 @@ SOURCES += $$PWD/openglwindow.cpp \
     galleon.cpp \
     forest.cpp \
     birds.cpp \
-    delaunay.c
+    delaunay.c \
+    octree.cpp
 HEADERS += $$PWD/openglwindow.h \
     gamewindow.h \
     camera.h \
@@ -34,7 +35,8 @@ HEADERS += $$PWD/openglwindow.h \
     galleon.h \
     forest.h \
     birds.h \
-    delaunay.h
+    delaunay.h \
+    octree.h
 
 SOURCES += \
     main.cpp

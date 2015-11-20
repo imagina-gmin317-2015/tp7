@@ -6,6 +6,7 @@
 
 #include "resourcemanager.h"
 #include "birds.h"
+#include "octree.h"
 
 class Drought
 {
@@ -25,6 +26,7 @@ private:
     float snowHeight;
     bool isActive;
     Birds *birds;
+    Octree *octree;
 };
 
 #endif // DROUGHT_H

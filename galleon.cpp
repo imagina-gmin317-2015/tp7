@@ -59,3 +59,8 @@ void Galleon::setWaterHeight(float waterHeight)
 {
     this->waterHeight = waterHeight;
 }
+
+PlyEntity *Galleon::getEntity()
+{
+    return entity;
+}

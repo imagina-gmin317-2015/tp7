@@ -4,7 +4,11 @@ Drought::Drought()
 {
     yellow = 0;
     snowHeight = 0;
-    birds = new Birds(20);
+    birds = new Birds(500);
+    octree = new Octree();
+    foreach (PlyEntity *e, birds->getEntities()) {
+        octree->addEntity(e);
+    }
 }
 
 void Drought::update(float delta)
@@ -21,8 +25,11 @@ void Drought::update(float delta)
 
 void Drought::draw()
 {
-    if(isActive)
+    if(isActive) {
         birds->draw(0);
+        octree->update();
+        octree->draw();
+    }
 }
 
 float Drought::getYellow() const

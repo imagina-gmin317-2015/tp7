@@ -11,6 +11,7 @@ public:
     Birds(int birdCount);
     void update(float delta);
     void draw(float delta);
+    QVector<PlyEntity*>getEntities();
 
 private:
     QVector<PlyEntity *> entities;

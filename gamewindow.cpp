@@ -47,7 +47,7 @@ void GameWindow::initialize()
     imagePath = ":/heightmap-1.png";
     this->m_image = QImage(imagePath);
 
-        this->vertices = initVertices(this->m_image.width(), this->m_image.height(), 2);
+    this->vertices = initVertices(this->m_image.width(), this->m_image.height(), 1);
 //        this->vertices = initVertices(this->m_image.width(), this->m_image.height());
 
     //    entity = PlyEntity::load(":/gull.ply");

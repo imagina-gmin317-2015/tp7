@@ -20,6 +20,8 @@ RainParticles::RainParticles(QImage *image)
     texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     texture->setMagnificationFilter(QOpenGLTexture::Linear);
 
+    this->octree = new Octree();
+    octree->addEntity(galleon->getEntity());
     initWater();
 }
 
@@ -112,6 +114,7 @@ void RainParticles::draw(float delta)
             glDisable(GL_LIGHT1);
         }
         this->galleon->draw();
+        octree->draw();
     }
 
     if(waterHeight > 0.000001) {
