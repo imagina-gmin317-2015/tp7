@@ -188,7 +188,7 @@ void TriangleWindow::initialize()
     PlyLoader *l = new PlyLoader(":/summertree.ply");
     l->load();
     addMods(l);
-    this->quad = new Quadtree(-100.0f,100.0f,100.0f, -100.0f,this->getMods(),0);
+    this->quad = new Quadtree(-0.5f,-0.5f,0.5f, 0.5f,this->getMods(),0);
 
 }
 
@@ -278,7 +278,7 @@ void TriangleWindow::loadMap(QString localPath)
 
 void TriangleWindow::render()
 {
-   // this->quad->getPly();
+
     nbTick += maj;
 
     if(nbTick >= 1000)
@@ -300,8 +300,8 @@ void TriangleWindow::render()
         nbTick = 0;
         m_frame = 0;
     }
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClearDepth(1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    //glClearDepth(1);
     glMatrixMode(GL_MODELVIEW);
 
     glLoadIdentity();
@@ -320,9 +320,10 @@ void TriangleWindow::render()
     }
 
 
-
-    glNormal3f(0,0,-1);
+    //glNormal3f(0,0,-1);
     displayTriangles();
+    this->quad->affiche();
+
     /*switch(c->etat)
     {
     case 0:

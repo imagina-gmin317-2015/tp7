@@ -126,14 +126,16 @@ void PlyLoader::draw()
        //  glPopMatrix();
 }
 
-QVector<float> PlyLoader::getBounding()
+QRectF PlyLoader::getBounding()
 {
-    QVector<float> bound;
-    bound.push_back(this->xMin);
-    bound.push_back(this->yMin);
-    bound.push_back(this->xMax);
-    bound.push_back(this->yMax);
-    return bound;
+
+    return QRectF(QPointF(this->xMin*this->size,this->yMin*this->size),QPointF(this->xMax*this->size,this->yMax*this->size));
+   /* QVector<float> bound;
+    bound.push_back(this->xMin*this->size);
+    bound.push_back(this->yMin*this->size);
+    bound.push_back(this->xMax*this->size);
+    bound.push_back(this->yMax*this->size);
+    return bound;*/
 
 }
 

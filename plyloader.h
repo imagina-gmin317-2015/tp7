@@ -10,6 +10,7 @@
 #include <QString>
 #include <QFile>
 #include <QDebug>
+#include <QRectF>
 
 struct point{
     float x,y,z;
@@ -21,7 +22,7 @@ public:
     PlyLoader(QString fileName);
     void load();
     void draw();
-    QVector<float> getBounding();
+    QRectF getBounding();
     QVector<float> getCoord();
     QString getName();
 
