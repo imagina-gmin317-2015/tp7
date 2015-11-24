@@ -35,7 +35,7 @@ Quadtree::Quadtree(float xMin, float yMin, float xMax, float yMax, QVector<PlyLo
                 }
         }
         if(div){
-            divise(xMin,yMin, yMax, yMax,mods,prof);
+            divise(xMin,yMin, yMax, yMax,this->object,prof);
         }else{
             isNull = true;
         }
