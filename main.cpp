@@ -17,6 +17,11 @@
 #include <QtCore>
 #include <QtGui>
 
+#include <QDebug>
+
+#include "sphere.h"
+#include "aabb.h"
+
 //#include <omp.h>
 
 using namespace std;
@@ -58,6 +63,37 @@ int main(int argc, char **argv)
     }
     
     calendar->start(20);
+
+    Sphere *s1 = new Sphere(0.0f, 0.0f, 0.0f, 1.0f);
+    Sphere *s2 = new Sphere(1.0f, 0.0f, 0.0f, 1.5f);
+    Sphere *s3 = new Sphere(7.0f, 0.0f, 0.0f, 1.0f);
+
+    AABB *a1 = new AABB(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+    AABB *a2 = new AABB(7.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+
+    qDebug()<< "Sphere vs Sphere";
+
+    qDebug()<< "Collision entre";
+    s1->display();
+    s2->display();
+    qDebug()<< s1->hasCollision(s2);
+
+    qDebug()<< "Collision entre";
+    s1->display();
+    s3->display();
+    qDebug()<< s1->hasCollision(s3);
+
+    qDebug()<< "Sphere vs ABB";
+
+    qDebug()<< "Collision entre";
+    s1->display();
+    a1->display();
+    qDebug()<< s1->hasCollision(a1);
+
+    qDebug()<< "Collision entre";
+    s1->display();
+    a2->display();
+    qDebug()<< s1->hasCollision(a2);
 
     return app.exec();
 }

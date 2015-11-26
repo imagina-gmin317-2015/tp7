@@ -17,6 +17,8 @@
 #include <QtCore>
 #include <QtGui>
 
+#include "octree.h"
+
 //#include <omp.h>
 
 int numParticules = 1000;
@@ -188,7 +190,7 @@ void TriangleWindow::initialize()
     PlyLoader *l = new PlyLoader(":/summertree.ply");
     l->load();
     addMods(l);
-    //this->quad = new Quadtree(-0.5f,-0.5f,0.5f, 0.5f,this->getMods(),0);
+    this->oc = new Octree(-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0, 4, this->getMods());
 
 }
 
@@ -356,6 +358,8 @@ void TriangleWindow::render()
     for(int i=0;i<mods.size();i++){
         mods.at(i)->draw();
     }
+
+    this->oc->display();
 
     m_frame++;
 

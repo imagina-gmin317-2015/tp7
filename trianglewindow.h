@@ -8,6 +8,8 @@
 #include <QVector>
 #include <QVector3D>
 
+#include "octree.h"
+
 /*struct point
 {
     float x, y ,z;
@@ -96,6 +98,8 @@ private:
     QVector<QVector3D> points;
     QVector<QVector3D> normals;
     QOpenGLShaderProgram* shader;
+
+    Octree *oc;
 };
 
 
