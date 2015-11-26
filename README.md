@@ -36,7 +36,8 @@ Collision entre une sphère et une box AABB. Elle se fait en 3 étapes :
 - Si le point d'origine de la sphère est à une distance inférieur à son rayon de n'importe quel des 8 points de la box => true (Collision par coin)
 - Sinon => false
 
-![alt tag](https://raw.githubusercontent.com/xviniette/tp7/bazia/ok.png)\
+![alt tag](https://raw.githubusercontent.com/xviniette/tp7/bazia/ok.png)
+
 Résultat de collisions entre Sphère/Sphère et Sphère/Box.
 
 Pour AABB, j'ai aussi une méthode qui gère la présence d'un point dans la box, ainsi qu'une méthode qui permet de savoir si il y a collision avec une autre box AABB (utilisé dans la contenance d'un objet de l'octree).
