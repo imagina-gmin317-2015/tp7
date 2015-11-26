@@ -1,9 +1,49 @@
-# TP7
+# TP7 : Gestion de scène
+### Vincent BAZIA
 
-La class quadtree est constitué de quatre float representant les coordonnées x et y des points supérieurs gauche et inferieur bas de la section du quadtree. De plus, un quatree est composé de quatre autres quadtree (initialisé à null) représentant les quatree fils du quatree ainsi qu'un vecteur contenant les entités appartenant au quadtree.
+ ## Octree
+ Création d'une classe Octree qui va se charger de gérer l'octree de notre terrain\
+Le fonctionnement d'un Octree est simple ([octree.h](https://github.com/xviniette/tp7/blob/bazia/octree.h) / [octree.cpp](https://github.com/xviniette/tp7/blob/bazia/octree.cpp)).\
+On va tout d'abord instancier un Octree qui va englober la scène. Une fois fait, il va lancer la "division" qui consiste à :
+- Si des objets sont contenus dans cet octree alors
+    -  il stocke les objets contenus
+    - Si on est pas "trop profond"
+        - On crée 8 fils égaux (dimensions) qui vont répéter récursivement depuis le début
+ - Sinon on s'arrête.
+ 
+Pour tester si l'objet est contenu, c'est un simple teste AABB sur 3 axes.
+ 
+De plus une méthode display va nous permettre d'afficher cet octree et tous ses fils.
 
-Le constructeur du quadtree prend en paramètres les coordonnées, l'ensemble des entités appartenant au père (si il y en a un) et la profondeur (qui est égale à 0 pour le premier nœud et égale à la profondeur du père + 1 pour les autres nœuds). Dans ce constructeur, on vérifie que la profondeur du quadtree n'est pas égale à la profondeur (auquel cas, on ajoute aux entités du quadtree les entités du père appartenant au quadtree) sinon, on cherche les entités appartenant au quadtree et l'on divise la quadtree en quatre quadtree (que l'on stock dans les fils).
+On obtient ce résultat.
+![alt tag](https://raw.githubusercontent.com/xviniette/tp7/bazia/demo.png)
 
-Pour savoir si une entité appartient au quadtree, on calcule si la hitbox (de type AABB) n'entre pas en colision avec le quadtree (grâce à la fonction instersect() de l'objet QRect qui prend paramètres de points (represantant les points supérieurs gauche et inferieur droit d'un rectangle dont on veut savoir s'il entre en collision avec le QRect appelant la fonction).
+## Un peu de physique... avec une sphère
 
-Dans la fonction intialize() de TriangleWindow, on créé le premier noeud du quadtree en l'initialisant avec les coordonnées du terrain (coin supérieur gauche et inférieur droit) ainsi que les entités du terrain (et une profondeur de 0). Le quadtree est construit sur l'axe des x et des y (en gardant un z stable).
+Pour ça, j'ai créé deux classes :
+- Sphère ([sphere.h](https://github.com/xviniette/tp7/blob/bazia/sphere.h)  [sphere.cpp](https://github.com/xviniette/tp7/blob/bazia/sphere.cpp))
+- AABB ([aabb.h](https://github.com/xviniette/tp7/blob/bazia/aabb.h) [aabb.cpp](https://github.com/xviniette/tp7/blob/bazia/aabb.cpp))
+
+Une sphère est défini par son point d'origine (x,y,z) et un rayon.\
+Une box AABB est défini par point d'origine (x,y,z) ainsi qu'une largeur (w), hauteur (h) et une profondeur (d).
+
+Collision entre deux sphères :
+Si distance entre les deux points d'origines est inférieur à la somme de leur rayons, alors il y a collisions.
+
+Collision entre une sphère et une box AABB. Elle se fait en 3 étapes :
+- Si le point d'origine du cercle est à l'intérieur du AABB => true (Compris dans la box)
+- Si Le point d'origine est à une distance inférieur à son rayon pour chaques face de la box AABB => true (Collision par une face)
+- Si le point d'origine de la sphère est à une distance inférieur à son rayon de n'importe quel des 8 points de la box => true (Collision par coin)
+- Sinon => false
+
+![alt tag](https://raw.githubusercontent.com/xviniette/tp7/bazia/ok.png)
+Résultat de collisions entre Sphère/Sphère et Sphère/Box.
+
+Pour AABB, j'ai aussi une méthode qui gère la présence d'un point dans la box, ainsi qu'une méthode qui permet de savoir si il y a collision avec une autre box AABB (utilisé dans la contenance d'un objet de l'octree).
+
+Je n'ai pas réussi à implémenter les collision K-DOP.
+
+Pour ce qui est des autres exercices, ayant déjà eu beaucoup de mal à finir les derniers tps, je n'ai pas réussi à rajouter ces fonctionnalités.
+
+Bonne journée !
+
