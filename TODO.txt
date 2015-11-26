@@ -1,0 +1,3 @@
+1. 1 quadtree static
+2. lod quatree dynamic
+3. lecture des "arbres", générer les LOD, organiser en graphe de scene si necessaire

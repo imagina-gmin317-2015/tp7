@@ -1,0 +1,18 @@
+Sphere vs Sphere 
+Collision entre 
+0 / 0 / 0  :  1 
+1 / 0 / 0  :  1.5 
+true 
+Collision entre 
+0 / 0 / 0  :  1 
+7 / 0 / 0  :  1 
+false 
+Sphere vs ABB 
+Collision entre 
+0 / 0 / 0  :  1 
+0 / 0 / 0  :  1 / 1 / 1 
+true 
+Collision entre 
+0 / 0 / 0  :  1 
+7 / 0 / 0  :  8 / 1 / 1 
+false 
