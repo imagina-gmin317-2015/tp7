@@ -19,6 +19,9 @@ private:
     int m_max_height;
 
 public:
+    enum QuadTreeMode {MIN_MAX,MEAN,STD_DEVIATION};
+    QuadTreeMode mode = STD_DEVIATION;
+public:
     QuadTree(Terrain* t) {
         m_terrain = t;
         m_min_width = 0;
@@ -68,6 +71,63 @@ public:
         m_children.append(dr);
     }
 
+    virtual bool minmax(float tolerance) {
+        int max_height = (m_terrain->getHeight()==m_max_height) ? m_max_height-1 : m_max_height;
+        int max_width = (m_terrain->getWidth()==m_max_width) ? m_max_width-1 : m_max_width;
+
+        float max1 = std::max(m_terrain->z(m_min_width,m_min_height), m_terrain->z(max_width,m_min_height));
+        float max2 = max(max1, m_terrain->z(m_min_width,max_height));
+        float maxF = max(max2, m_terrain->z(max_width,max_height));
+
+        float min1 = min(m_terrain->z(m_min_width,m_min_height), m_terrain->z(max_width,m_min_height));
+        float min2 = min(min1, m_terrain->z(m_min_width,max_height));
+        float minF = min(min2, m_terrain->z(max_width,max_height));
+        return maxF-minF < tolerance;
+    }
+
+    virtual bool mean(float tolerance) {
+
+        float sum = 0.f;
+        float cpt = 0.0;
+        int max_height = (m_terrain->getHeight()==m_max_height) ? m_max_height-1 : m_max_height;
+        int max_width = (m_terrain->getWidth()==m_max_width) ? m_max_width-1 : m_max_width;
+
+
+            for(int i = m_min_width ; i < max_width ; i++){
+                for(int j = m_min_height ; j < max_height ; j++){
+                    sum += m_terrain->z(i,j);
+                    cpt++;
+                }
+            }
+        float mean_value = sum / cpt;
+
+        return mean_value < tolerance;
+    }
+
+    virtual bool standarddeviation(float tolerance) {
+        float sum = 0.f;
+        float cpt = 0.0;
+        int max_height = (m_terrain->getHeight()==m_max_height) ? m_max_height-1 : m_max_height;
+        int max_width = (m_terrain->getWidth()==m_max_width) ? m_max_width-1 : m_max_width;
+
+
+            for(int i = m_min_width ; i < max_width ; i++){
+                for(int j = m_min_height ; j < max_height ; j++){
+                    sum += m_terrain->z(i,j);
+                    cpt++;
+                }
+            }
+        float mean_value = sum / cpt;
+
+        for(int i = m_min_width ; i < max_width ; i++){
+            for(int j = m_min_height ; j < max_height ; j++){
+                sum += pow(m_terrain->z(i,j)-mean_value,2.0f);
+            }
+        }
+        float deviation = sum/cpt;
+        return deviation < tolerance;
+    }
+
     virtual void tolerate(float tolerance, float min_patch_size=1) {
         if (((m_max_width - m_min_width) < min_patch_size)
                 || (m_max_height - m_min_height) < min_patch_size)
@@ -81,15 +141,16 @@ public:
             clear();
             return;
         }
-        float max1 = std::max(m_terrain->z(m_min_width,m_min_height), m_terrain->z(m_max_width-1,m_min_height));
-        float max2 = max(max1, m_terrain->z(m_min_width,m_max_height-1));
-        float maxF = max(max2, m_terrain->z(m_max_width-1,m_max_height-1));
 
-        float min1 = min(m_terrain->z(m_min_width,m_min_height), m_terrain->z(m_max_width-1,m_min_height));
-        float min2 = min(min1, m_terrain->z(m_min_width,m_max_height-1));
-        float minF = min(min2, m_terrain->z(m_max_width-1,m_max_height-1));
+        bool rslt = false;
+        if(mode==MIN_MAX)
+            rslt = minmax(tolerance);
+        else if(mode==MEAN)
+            rslt = mean(tolerance);
+        else
+            rslt = standarddeviation(tolerance);
 
-        if(maxF-minF < tolerance){
+        if(rslt){
             if(!m_children.empty())
                 m_children.clear();
         }else{
@@ -108,49 +169,50 @@ public:
             foreach(QuadTree* qt,m_children)
                 qt->draw();
             return;
+        }
 
-            int max_height = (m_terrain->getHeight()==m_max_height) ? m_max_height-1 : m_max_height;
-            int max_width = (m_terrain->getWidth()==m_max_width) ? m_max_width-1 : m_max_width;
-            glBegin(GL_TRIANGLES);
-            //displayColor(m_terrain->z(m_min_width,m_min_height));
-            glNormal3fv(m_terrain->normal(m_min_width,m_min_height,m_min_width,max_height,max_width,m_min_height));
-            glVertex3f(
-                       m_terrain->x(m_min_width,m_min_height),
-                       m_terrain->y(m_min_width,m_min_height),
-                       m_terrain->z(m_min_width,m_min_height));
-            //id = i*terrain->getWidth() +(j+1);
-            //displayColor(m_terrain->z(m_min_width,m_max_height));
+        int max_height = (m_terrain->getHeight()==m_max_height) ? m_max_height-1 : m_max_height;
+        int max_width = (m_terrain->getWidth()==m_max_width) ? m_max_width-1 : m_max_width;
+        glBegin(GL_TRIANGLES);
+        //displayColor(m_terrain->z(m_min_width,m_min_height));
+        glNormal3fv(m_terrain->normal(m_min_width,m_min_height,m_min_width,max_height,max_width,m_min_height));
+        glVertex3f(
+                    m_terrain->x(m_min_width,m_min_height),
+                    m_terrain->y(m_min_width,m_min_height),
+                    m_terrain->z(m_min_width,m_min_height));
+        //id = i*terrain->getWidth() +(j+1);
+        //displayColor(m_terrain->z(m_min_width,m_max_height));
 
-            glVertex3f(
-                       m_terrain->x(m_min_width,max_height),
-                       m_terrain->y(m_min_width,max_height),
-                       m_terrain->z(m_min_width,max_height));
-            //id = (i+1)*terrain->getWidth() +j;
-            //displayColor(m_terrain->z(m_max_width,m_min_height));
-            glVertex3f(
-                       m_terrain->x(max_width,m_min_height),
-                       m_terrain->y(max_width,m_min_height),
-                       m_terrain->z(max_width,m_min_height));
+        glVertex3f(
+                    m_terrain->x(m_min_width,max_height),
+                    m_terrain->y(m_min_width,max_height),
+                    m_terrain->z(m_min_width,max_height));
+        //id = (i+1)*terrain->getWidth() +j;
+        //displayColor(m_terrain->z(m_max_width,m_min_height));
+        glVertex3f(
+                    m_terrain->x(max_width,m_min_height),
+                    m_terrain->y(max_width,m_min_height),
+                    m_terrain->z(max_width,m_min_height));
 
 
-            glNormal3fv(m_terrain->normal(m_min_width,max_height,max_width,m_min_height,max_width,max_height));
-            glVertex3f(
-                       m_terrain->x(m_min_width,max_height),
-                       m_terrain->y(m_min_width,max_height),
-                       m_terrain->z(m_min_width,max_height));
-            //id = (i+1)*terrain->getWidth() +j;
-            //displayColor(m_terrain->z(m_max_width,m_min_height));
-            glVertex3f(
-                       m_terrain->x(max_width,m_min_height),
-                       m_terrain->y(max_width,m_min_height),
-                       m_terrain->z(max_width,m_min_height));
+        glNormal3fv(m_terrain->normal(m_min_width,max_height,max_width,m_min_height,max_width,max_height));
+        glVertex3f(
+                    m_terrain->x(m_min_width,max_height),
+                    m_terrain->y(m_min_width,max_height),
+                    m_terrain->z(m_min_width,max_height));
+        //id = (i+1)*terrain->getWidth() +j;
+        //displayColor(m_terrain->z(m_max_width,m_min_height));
+        glVertex3f(
+                    m_terrain->x(max_width,m_min_height),
+                    m_terrain->y(max_width,m_min_height),
+                    m_terrain->z(max_width,m_min_height));
 
-            glVertex3f(
-                       m_terrain->x(max_width,max_height),
-                       m_terrain->y(max_width,max_height),
-                       m_terrain->z(max_width,max_height));
-            glEnd();
-    }
+        glVertex3f(
+                    m_terrain->x(max_width,max_height),
+                    m_terrain->y(max_width,max_height),
+                    m_terrain->z(max_width,max_height));
+        glEnd();
+
 
     }
 };
