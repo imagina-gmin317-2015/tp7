@@ -21,8 +21,8 @@ Arrêt du quadtree lorsque la variance dans un quad est inferieure ou égale à 
 ![alt tag](./results/result_2.png)
 Arrêt du quadtree lorsque la variance dans un quad est inferieure ou égale à 2
 
-![alt tag](./result_seuil_5.png)
-![alt tag](./result_5.png)
+![alt tag](./results/result_seuil_5.png)
+![alt tag](./results/result_5.png)
 Arrêt du quadtree lorsque la variance dans un quad est inferieure ou égale à 5
 
 ![alt tag](./results/result_seuil_10.png)
