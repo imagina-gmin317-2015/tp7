@@ -114,6 +114,7 @@ void RainParticles::draw(float delta)
             glDisable(GL_LIGHT1);
         }
         this->galleon->draw();
+        octree->update();
         octree->draw();
     }
 

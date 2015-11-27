@@ -60,7 +60,6 @@ void Node::addEntity(PlyEntity *entity)
         foreach (Node other, nodes) {
             if(n.equal(other)) {
                 nodes[i].addEntity(entity);
-//                other.addEntity(entity);
                 return;
             }
             i++;

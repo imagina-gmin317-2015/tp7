@@ -4,7 +4,7 @@ Drought::Drought()
 {
     yellow = 0;
     snowHeight = 0;
-    birds = new Birds(500);
+    birds = new Birds(100);
     octree = new Octree();
     foreach (PlyEntity *e, birds->getEntities()) {
         octree->addEntity(e);
