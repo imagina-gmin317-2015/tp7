@@ -8,15 +8,31 @@
 
 Il n'y a plus qu'une seule fenêtre pour ce TP au lieu des quatre, une fenêtre supplémentaire permettant de changer les saisons est néamoins présente. Attention, elle peut se trouver trop à droite ou derrière la fenêtre principale si l'écran est trop petit.
 
-Pour ce TP, tout à été passé en VAO + VBO, ce qui décharge grandement le processeur, mais qui peut mettre à mal la carte graphique. Cela a également permis de simplifier grandement l'utilisation de shaders.
-Un shader est utilisé pour la map, il y a en tout trois textures, une pour la terre, une pour la pierre et une pour la neige. 
+![alt tag](./result/result1.png)
+On peut voir que le nombre de triangles est très élevé
 
-![alt tag](./birds.png)
+J'ai donc simplifé le maillage en utilisant un quadtree, le quadtree sert comme algo de décimation. Je ne garde que les points, sans garder les carrés, puis je les triangule (avec une triangulation de delaunay) pour les relier.
 
-Un second shader est également utilisé pour l'eau, qui a également sa propre texture. La position de chaque vertex de l'eau est calculée dans le vertex shader.
+![alt tag](./result seuil_1.png)
+![alt tag](./result_1.png)
+Arrêt du quadtree lorsque la variance dans un quad est inferieure ou égale à 1
 
-![alt tag](./boat.png)
+![alt tag](./result_seuil_2.png)
+![alt tag](./result_2.png)
+Arrêt du quadtree lorsque la variance dans un quad est inferieure ou égale à 2
 
-L'utilisation du shader permet de ne pas modifier les données en mémoire et de rendre plus simple la modification de l'environnement, plus simple que si l'on devait modifier à la main les VAO/VBO
+![alt tag](./result_seuil_5.png)
+![alt tag](./result_5.png)
+Arrêt du quadtree lorsque la variance dans un quad est inferieure ou égale à 5
 
-J'ai également ajouté un compteur de fps pour avoir une idée des performances. J'en ai profité pour appeler le update avec le temps réel passé entre chaque frame et non le temps défini au début par le QTimer qui peut être faux en cas de faibles performances.
+![alt tag](./result_seuil_10.png)
+![alt tag](./result_10.png)
+Arrêt du quadtree lorsque la variance dans un quad est inferieure ou égale à 10
+
+![alt tag](./result_seuil_20.png)
+![alt tag](./result_20.png)
+Arrêt du quadtree lorsque la variance dans un quad est inferieure ou égale à 20
+
+On peut voir que plus le seuil de variance est élevé, mois il y aura de triangles, mais moins il y aura de détals.
+
+J'ai également mis en place un octree adaptatif pour la collision des oiseaux (2eme saison (un clic sur le bouton de changement de saisons)). Il est mis à jour lors du déplacement des oiseaux. Le cube s'affiche en rouge lorsqu'il y a une collision
