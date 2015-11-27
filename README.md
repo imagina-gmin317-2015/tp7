@@ -36,3 +36,5 @@ Arrêt du quadtree lorsque la variance dans un quad est inferieure ou égale à 
 On peut voir que plus le seuil de variance est élevé, mois il y aura de triangles, mais moins il y aura de détals.
 
 J'ai également mis en place un octree adaptatif pour la collision des oiseaux (2eme saison (un clic sur le bouton de changement de saisons)). Il est mis à jour lors du déplacement des oiseaux. Le cube s'affiche en rouge lorsqu'il y a une collision
+![alt tag](./results/quadtree.png)
+
